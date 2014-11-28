@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addons>
+<addon id="plugin.video.dfmalaystream"
+       name="Malay Movie Stream"
+       version="2.2.6"
+       provider-name="DaudFatihah">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+    <import addon="script.module.t0mm0.common" version="2.1.1"/>
+    <import addon="script.module.urlresolver"  version="2.4.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Malaysian Movies</summary>
+        <description>Malaysian Movies</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+</addons>
