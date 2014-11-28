@@ -161,9 +161,9 @@ def Dfm2uMenu():
         addon.add_directory({'mode': 'GetTitles', 'section': 'ALL', 'url': BASE_URL + '/dfm2u/telemovie/',
                              'startPage': '1', 'numOfPages': '1'}, {'title':  'DFM2U Telemovie'}, img=IconPath + 'dfm2uico.png', fanart=FanartPath + 'fanart.png')
         addon.add_directory({'mode': 'GetEpisode', 'section': 'ALL', 'url': BASE_URL + '/dfm2u/drama/',
-                             'startPage': '1', 'numOfPages': '1'}, {'title':  'DFM2U Dramas'}, img=IconPath + 'dfm2uico.png', fanart=FanartPath + 'fanart.png')
+                             'startPage': '1', 'numOfPages': '1'}, {'title':  'DFM2U Drama'}, img=IconPath + 'dfm2uico.png', fanart=FanartPath + 'fanart.png')
         addon.add_directory({'mode': 'GetEpisode', 'section': 'ALL', 'url': BASE_URL + '/dfm2u/tvshow/',
-                             'startPage': '1', 'numOfPages': '1'}, {'title':  'DFM2U TV Show'}, img=IconPath + 'dfm2uico.png', fanart=FanartPath + 'fanart.png')                                          
+                             'startPage': '1', 'numOfPages': '1'}, {'title':  'DFM2U TvShow'}, img=IconPath + 'dfm2uico.png', fanart=FanartPath + 'fanart.png')                                          
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------#
