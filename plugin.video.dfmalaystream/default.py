@@ -39,7 +39,7 @@ section = addon.queries.get('section', None)
 
 ################################################################################# Titles #################################################################################
 
-def GetTitles(section, url, startPage= '1', numOfPages= '1'): 
+def GetTitles(section, url, startPage= '1', numOfPages= '1'):
         print 'Proses penyenaraian tajuk cerita %s' % url
         pageUrl = url
         if int(startPage)> 1:
@@ -54,13 +54,13 @@ def GetTitles(section, url, startPage= '1', numOfPages= '1'):
                         html = net.http_GET(pageUrl).content
                 match = re.compile('<h2.+?href="(.+?)".+?>(.+?)<.+?src="(.+?)"', re.DOTALL).findall(html)
                 for movieUrl, name, img in match:
-                        addon.add_directory({'mode': 'GetLinks', 'section': section, 'url': movieUrl}, {'title':  name.strip()}, img= img, fanart=FanartPath + 'fanart.png') 
+                        addon.add_directory({'mode': 'GetLinks', 'section': section, 'url': movieUrl}, {'title':  name.strip()}, img= img, fanart=FanartPath + 'fanart.png')
                 addon.add_directory({'mode': 'GetTitles', 'url': url, 'startPage': str(end), 'numOfPages': numOfPages}, {'title': '[COLOR blue][B][I]Next page...[/B][/I][/COLOR]'}, img=IconPath + 'next.png', fanart=FanartPath + 'fanart.png')
        	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 ################################################################################# Episode #################################################################################
 
-def GetEpisode(section, url, startPage= '1', numOfPages= '1'): 
+def GetEpisode(section, url, startPage= '1', numOfPages= '1'):
         print 'Proses penyenaraian tajuk cerita %s' % url
         pageUrl = url
         if int(startPage)> 1:
@@ -75,7 +75,7 @@ def GetEpisode(section, url, startPage= '1', numOfPages= '1'):
                         html = net.http_GET(pageUrl).content
                 match = re.compile('<h2.+?href="(.+?)".+?>(.+?)<.+?src="(.+?)"', re.DOTALL).findall(html)
                 for movieUrl, name, img in match:
-                        addon.add_directory({'mode': 'GetEpisodelinks', 'section': section, 'url': movieUrl}, {'title':  name.strip()}, img= img, fanart=FanartPath + 'fanart.png') 
+                        addon.add_directory({'mode': 'GetEpisodelinks', 'section': section, 'url': movieUrl}, {'title':  name.strip()}, img= img, fanart=FanartPath + 'fanart.png')
                 addon.add_directory({'mode': 'GetTitles', 'url': url, 'startPage': str(end), 'numOfPages': numOfPages}, {'title': '[COLOR blue][B][I]Next page...[/B][/I][/COLOR]'}, img=IconPath + 'next.png', fanart=FanartPath + 'fanart.png')
        	xbmcplugin.endOfDirectory(int(sys.argv[1]))
         
@@ -91,7 +91,7 @@ def GetEpisodelinks(section, url):
         for url, name in match:
                 r = re.search('link=', content)
                 if r: addon.add_directory({'mode': 'GetLinks', 'section': section, 'url': url}, {'title':  name.strip()}, fanart=FanartPath + 'fanart.png')
-                else: 
+                else:
                        host = GetDomain(url)
                        if urlresolver.HostedMediaFile(url= url):
                              addon.add_directory({'mode': 'PlayVideo', 'url': url, 'listitem': listitem}, {'title':  host }, img=IconPath + 'play.png', fanart=FanartPath + 'fanart.png')
@@ -150,8 +150,10 @@ def MainMenu():    #homescreen
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
         
 def AcgMenu():    #G
-        addon.add_directory({'mode': 'GetTitles', 'section': 'ALL', 'url': BASE_URL + '/acgtube/',
-                             'startPage': '1', 'numOfPages': '1'}, {'title':  'ACG-TUBE'}, img=IconPath + 'acgico.png', fanart=FanartPath + 'fanart.png')
+        addon.add_directory({'mode': 'GetTitles', 'section': 'ALL', 'url': BASE_URL + '/acgtube/movie/',
+                             'startPage': '1', 'numOfPages': '1'}, {'title':  'ACG-TUBE Movie'}, img=IconPath + 'acgico.png', fanart=FanartPath + 'fanart.png')
+        addon.add_directory({'mode': 'GetTitles', 'section': 'ALL', 'url': BASE_URL + '/acgtube/tvshow/',
+                             'startPage': '1', 'numOfPages': '1'}, {'title':  'ACG-TUBE TV Show'}, img=IconPath + 'acgico.png', fanart=FanartPath + 'fanart.png')
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
@@ -170,15 +172,15 @@ def Dfm2uMenu():
 
 #################################################################################################################################################################################
 
-if mode == 'main': 
+if mode == 'main':
 	MainMenu()
-elif mode == 'AcgMenu': 
+elif mode == 'AcgMenu':
     AcgMenu()
 elif mode == 'Dfm2uMenu':
     Dfm2uMenu()
-elif mode == 'GetTitles': 
+elif mode == 'GetTitles':
 	GetTitles(section, url, startPage, numOfPages)
-elif mode == 'GetEpisode': 
+elif mode == 'GetEpisode':
 	GetEpisode(section, url, startPage, numOfPages)
 elif mode == 'GetEpisodelinks':
 	GetEpisodelinks(section, url)        
