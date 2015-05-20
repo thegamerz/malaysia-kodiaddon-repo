@@ -87,7 +87,7 @@ def GetEpisode(section, url, startPage= '1', numOfPages= '1'):
                 addon.add_directory({'mode': 'GetTitles', 'url': url, 'startPage': str(end), 'numOfPages': numOfPages}, {'title': '[COLOR blue][B][I]Next page...[/B][/I][/COLOR]'}, img=IconPath + 'next.png', fanart=FanartPath + 'fanart.png')
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
         
-############################################################################### Get Episodelinks #############################################################################################
+############################################################################### Get Episodelinks #############################################################################
 
 def GetEpisodelinks(section, url):
         print 'GETLINKS FROM URL: '+url
@@ -106,7 +106,7 @@ def GetEpisodelinks(section, url):
         
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
-############################################################################### Get links #############################################################################################
+############################################################################### Get links ###################################################################################
 
 
 def GetLinks(section, url):
