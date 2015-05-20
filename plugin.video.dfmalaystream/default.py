@@ -8,11 +8,11 @@ from htmlentitydefs import name2codepoint as n2cp
 import HTMLParser
 
 try:
-	from sqlite3 import dbapi2 as sqlite
-	print "Loading sqlite3 as DB engine"
+        from sqlite3 import dbapi2 as sqlite
+        print "Loading sqlite3 as DB engine"
 except:
-	from pysqlite2 import dbapi2 as sqlite
-	print "Loading pysqlite2 as DB engine"
+        from pysqlite2 import dbapi2 as sqlite
+        print "Loading pysqlite2 as DB engine"
 
 addon_id = 'plugin.video.dfmalaystream'
 plugin = xbmcaddon.Addon(id=addon_id)
@@ -42,6 +42,11 @@ section = addon.queries.get('section', None)
 def GetTitles(section, url, startPage= '1', numOfPages= '1'):
         print 'Proses penyenaraian tajuk cerita %s' % url
         pageUrl = url
+        searchurl = url.split("?")
+        searchurl = searchurl[0]
+        match = re.search('acgtube', url)
+        if match:
+           searchurl =  BASE_URL + '/acgtube/search/'
         if int(startPage)> 1:
                 pageUrl = url + '?page=' + startPage
         print pageUrl
@@ -53,10 +58,11 @@ def GetTitles(section, url, startPage= '1', numOfPages= '1'):
                         pageUrl = url + 'page/' + str(page) + '/'
                         html = net.http_GET(pageUrl).content
                 match = re.compile('<h2.+?href="(.+?)".+?>(.+?)<.+?src="(.+?)"', re.DOTALL).findall(html)
+                addon.add_directory({'mode': 'GetSearchQuery', 'url': searchurl},  {'title':  '[COLOR green]Search[/COLOR]'}, img=IconPath + 'search.png', fanart=FanartPath + 'fanart.png')
                 for movieUrl, name, img in match:
                         addon.add_directory({'mode': 'GetLinks', 'section': section, 'url': movieUrl}, {'title':  name.strip()}, img= img, fanart=FanartPath + 'fanart.png')
                 addon.add_directory({'mode': 'GetTitles', 'url': url, 'startPage': str(end), 'numOfPages': numOfPages}, {'title': '[COLOR blue][B][I]Next page...[/B][/I][/COLOR]'}, img=IconPath + 'next.png', fanart=FanartPath + 'fanart.png')
-       	xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 ################################################################################# Episode #################################################################################
 
@@ -66,6 +72,7 @@ def GetEpisode(section, url, startPage= '1', numOfPages= '1'):
         if int(startPage)> 1:
                 pageUrl = url + '?page=' + startPage
         print pageUrl
+        searchurl = url.split("?")
         html = net.http_GET(pageUrl).content
         start = int(startPage)
         end = start + int(numOfPages)
@@ -74,10 +81,11 @@ def GetEpisode(section, url, startPage= '1', numOfPages= '1'):
                         pageUrl = url + 'page/' + str(page) + '/'
                         html = net.http_GET(pageUrl).content
                 match = re.compile('<h2.+?href="(.+?)".+?>(.+?)<.+?src="(.+?)"', re.DOTALL).findall(html)
+                addon.add_directory({'mode': 'GetSearchQuery', 'url': searchurl[0]},  {'title':  '[COLOR green]Search[/COLOR]'}, img=IconPath + 'search.png', fanart=FanartPath + 'fanart.png')
                 for movieUrl, name, img in match:
                         addon.add_directory({'mode': 'GetEpisodelinks', 'section': section, 'url': movieUrl}, {'title':  name.strip()}, img= img, fanart=FanartPath + 'fanart.png')
                 addon.add_directory({'mode': 'GetTitles', 'url': url, 'startPage': str(end), 'numOfPages': numOfPages}, {'title': '[COLOR blue][B][I]Next page...[/B][/I][/COLOR]'}, img=IconPath + 'next.png', fanart=FanartPath + 'fanart.png')
-       	xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        xbmcplugin.endOfDirectory(int(sys.argv[1]))
         
 ############################################################################### Get Episodelinks #############################################################################################
 
@@ -170,28 +178,56 @@ def Dfm2uMenu():
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
+def GetSearchQuery(url):
+	url = url + '?cariler='
+    #last_search = addon.load_data('search')
+	#if not last_search: last_search = ''
+	keyboard = xbmc.Keyboard()
+        keyboard.setHeading('[COLOR green]Search[/COLOR]')
+	#keyboard.setDefault(last_search)
+	keyboard.doModal()
+	if (keyboard.isConfirmed()):
+                query = keyboard.getText()
+                addon.save_data('search',query)
+                url = url + query
+                GetTitles(section, url, startPage= '1', numOfPages= '1')
+                #Search(query,url)
+	else:
+                return  
+def Search(query,url):
+        url = url + query
+        url = url.replace(' ', '+')
+        print url
+        html = net.http_GET(url).content
+        match = re.compile('<h3 class="r"><a href="(.+?)".+?onmousedown=".+?">(.+?)</a>').findall(html)
+        for url, title in match:
+                title = title.replace('<b>...</b>', '').replace('<em>', '').replace('</em>', '')
+                addon.add_directory({'mode': 'GetLinks', 'url': url}, {'title':  title})
+	xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
+
 #################################################################################################################################################################################
 
 if mode == 'main':
-	MainMenu()
+        MainMenu()
 elif mode == 'AcgMenu':
     AcgMenu()
 elif mode == 'Dfm2uMenu':
     Dfm2uMenu()
 elif mode == 'GetTitles':
-	GetTitles(section, url, startPage, numOfPages)
+        GetTitles(section, url, startPage, numOfPages)
 elif mode == 'GetEpisode':
-	GetEpisode(section, url, startPage, numOfPages)
+        GetEpisode(section, url, startPage, numOfPages)
 elif mode == 'GetEpisodelinks':
-	GetEpisodelinks(section, url)        
+        GetEpisodelinks(section, url)        
 elif mode == 'GetLinks':
-	GetLinks(section, url)
+        GetLinks(section, url)
 elif mode == 'GetSearchQuery':
-	GetSearchQuery()
+        GetSearchQuery(url)
 elif mode == 'Search':
-	Search(query)
+        Search(query,url)
 elif mode == 'PlayVideo':
-	PlayVideo(url, listitem)	
+        PlayVideo(url, listitem)        
 elif mode == 'ResolverSettings':
         urlresolver.display_settings()
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
