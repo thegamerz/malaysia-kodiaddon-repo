@@ -1,7 +1,7 @@
 import xbmc, xbmcgui, xbmcaddon, xbmcplugin
 import urllib, urllib2
 import re, string, sys, os
-import urlresolver
+import commonresolvers
 from t0mm0.common.addon import Addon
 from t0mm0.common.net import Net
 from htmlentitydefs import name2codepoint as n2cp
@@ -101,8 +101,8 @@ def GetEpisodelinks(section, url):
                 if r: addon.add_directory({'mode': 'GetLinks', 'section': section, 'url': url}, {'title':  name.strip()}, fanart=FanartPath + 'fanart.png')
                 else:
                        host = GetDomain(url)
-                       if urlresolver.HostedMediaFile(url= url):
-                             addon.add_directory({'mode': 'PlayVideo', 'url': url, 'listitem': listitem}, {'title':  host }, img=IconPath + 'play.png', fanart=FanartPath + 'fanart.png')
+                       #if urlresolver.HostedMediaFile(url= url):
+                       addon.add_directory({'mode': 'PlayVideo', 'url': url, 'listitem': listitem}, {'title':  host }, img=IconPath + 'play.png', fanart=FanartPath + 'fanart.png')
         
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
@@ -118,8 +118,8 @@ def GetLinks(section, url):
         listitem = GetMediaInfo(content)
         for url in match:
                 host = GetDomain(url)
-                if urlresolver.HostedMediaFile(url= url):
-                        addon.add_directory({'mode': 'PlayVideo', 'url': url, 'listitem': listitem}, {'title':  host }, img=IconPath + 'play.png', fanart=FanartPath + 'fanart.png')
+                #if urlresolver.HostedMediaFile(url= url):
+                addon.add_directory({'mode': 'PlayVideo', 'url': url, 'listitem': listitem}, {'title':  host }, img=IconPath + 'play.png', fanart=FanartPath + 'fanart.png')
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 ############################################################################# Play Video #####################################################################################
@@ -127,7 +127,8 @@ def GetLinks(section, url):
 def PlayVideo(url, listitem):
     try:
         print 'in PlayVideo %s' % url
-        stream_url = urlresolver.HostedMediaFile(url).resolve()
+        #stream_url = urlresolver.HostedMediaFile(url).resolve()
+        stream_url = commonresolvers.get(url).result
         xbmc.Player().play(stream_url)
         addon.add_directory({'mode': 'help'}, {'title':  '[COLOR slategray][B]^^^ Press back ^^^[/B] [/COLOR]'},'','')
     except:
@@ -152,9 +153,9 @@ def GetMediaInfo(html):
 ###################################################################### menus ####################################################################################################
 
 def MainMenu():    #homescreen
-        addon.add_directory({'mode': 'AcgMenu'}, {'title':  '[COLOR blue]ACG-TUBE[/COLOR] >>'}, img=IconPath + 'acgico.png', fanart=FanartPath + 'fanart.png')
+        addon.add_directory({'mode': 'AcgMenu'}, {'title':  '[COLOR blue]ACG-TUBE (Buat founder Acgtube - "Berdosa bagi family makan duit haram.. :)"[/COLOR] >>'}, img=IconPath + 'acgico.png', fanart=FanartPath + 'fanart.png')
         addon.add_directory({'mode': 'Dfm2uMenu'}, {'title':  '[COLOR blue]DFM2U[/COLOR] >>'}, img=IconPath + 'dfm2uico.png', fanart=FanartPath + 'fanart.png')
-        addon.add_directory({'mode': 'ResolverSettings'}, {'title':  '[COLOR red]Resolver Settings[/COLOR]'}, img=IconPath + 'resolver.png', fanart=FanartPath + 'fanart.png')       
+        #addon.add_directory({'mode': 'ResolverSettings'}, {'title':  '[COLOR red]Resolver Settings[/COLOR]'}, img=IconPath + 'resolver.png', fanart=FanartPath + 'fanart.png')       
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
         
 def AcgMenu():    #G
@@ -228,6 +229,6 @@ elif mode == 'Search':
         Search(query,url)
 elif mode == 'PlayVideo':
         PlayVideo(url, listitem)        
-elif mode == 'ResolverSettings':
-        urlresolver.display_settings()
+#elif mode == 'ResolverSettings':
+        #urlresolver.display_settings()
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
