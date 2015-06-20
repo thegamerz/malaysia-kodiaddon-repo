@@ -1,3 +1,6 @@
+[B]Version 2.3.1[/B]
+- Add & fix filehost in resolver
+
 [B]Version 2.3.0[/B]
 - Using standalone resolver(modified from Genesis resolver)
 - Fix some bug
