@@ -325,6 +325,7 @@ class js:
         url += common.parseDOM(sUnpacked, "embed", ret="src")
 
         url = [i for i in url if not i.endswith('.srt')]
+        url += [i for i in url if not i.endswith('.png')]
 
         url = 'http://' + url[-1].split('://', 1)[-1]
         return url
@@ -647,17 +648,17 @@ class dailymotion:
                 result = getUrl(u).result
                 result = urllib.unquote(result).replace('\\/', '/').replace('\n', '').replace('\'', '"').replace(' ', '')
 
-                url = []
-                try: url += [{'quality': 'HD', 'url': getUrl(re.compile('"stream_h264_ld_url":"(.+?)"').findall(result)[0], output='geturl').result}]
+                #url = []
+                try: url = getUrl(re.compile('"stream_h264_ld_url":"(.+?)"').findall(result)[0], output='geturl').result
                 except: pass
-                try: url += [{'quality': 'SD', 'url': getUrl(re.compile('"stream_h264_hq_url":"(.+?)"').findall(result)[0], output='geturl').result}]
-                except: pass
-                if not url == []: return url
-                try: url += [{'quality': 'SD', 'url': getUrl(re.compile('"stream_h264_url":"(.+?)"').findall(result)[0], output='geturl').result}]
+                try: url = getUrl(re.compile('"stream_h264_hq_url":"(.+?)"').findall(result)[0], output='geturl').result
                 except: pass
                 if not url == []: return url
-                try: url += [{'quality': 'SD', 'url': getUrl(re.compile('"stream_h264_ld_url":"(.+?)"').findall(result)[0], output='geturl').result}]
+                try: url = getUrl(re.compile('"stream_h264_url":"(.+?)"').findall(result)[0], output='geturl').result
                 except: pass
+                if not url == []: return url
+                try: url = getUrl(re.compile('"stream_h264_ld_url":"(.+?)"').findall(result)[0], output='geturl').result
+                except: pass               
 
                 if url == []: return
                 return url
@@ -762,21 +763,24 @@ class googledocs:
 
             result = getUrl(url).result
             result = re.compile('"fmt_stream_map",(".+?")').findall(result)[0]
-
+            #print result
             u = json.loads(result)
+            urls = u.split('|')[-1]
+            #print u
             u = [i.split('|')[-1] for i in u.split(',')]
             u = sum([self.tag(i) for i in u], [])
-
-            url = []
-            try: url += [[i for i in u if i['quality'] == '1080p'][0]]
+            #print u
+            #url = []
+            try: url = [[i for i in u if i['quality'] == '1080p'][0]]
             except: pass
-            try: url += [[i for i in u if i['quality'] == 'HD'][0]]
+            try: url = [[i for i in u if i['quality'] == 'HD'][0]]
             except: pass
-            try: url += [[i for i in u if i['quality'] == 'SD'][0]]
+            try: url = [[i for i in u if i['quality'] == 'SD'][0]]
             except: pass
 
             if url == []: return
-            return url
+            #url = url.split(',')[-1]
+            return urls
         except:
             return
 
@@ -2094,6 +2098,45 @@ class zettahost:
             result = getUrl(url, mobile=True).result
 
             result = re.compile('(eval.*?\)\)\))').findall(result)[-1]
+            url = js().worker(result)
+            return url
+        except:
+            return
+            
+class letwatch:
+    def info(self):
+        return {
+            'netloc': ['letwatch.us'],
+            'host': ['Letwatch'],
+            'quality': 'Medium',
+            'captcha': False,
+            'a/c': False
+        }
+
+    def resolve(self, url):
+        try:
+            url = url.replace('/embed-', '/')
+            url = re.compile('//.+?/([\w]+)').findall(url)[0]
+            url = 'http://letwatch.us/%s' % url
+            #import time
+            #time.sleep(7)
+            result = getUrl(url).result
+            #print result
+            try:
+                post = {}
+                f = common.parseDOM(result, "Form", attrs = { "method": "POST" })[0]
+                f = f.replace('"submit"', '"hidden"')
+                k = common.parseDOM(f, "input", ret="name", attrs = { "type": "hidden" })
+                for i in k: post.update({i: common.parseDOM(f, "input", ret="value", attrs = { "name": i })[0]})
+                post = urllib.urlencode(post)
+                result = getUrl(url, post=post).result
+            except:
+                pass
+
+            result = re.compile('(eval.*?\)\)\))').findall(result)[-1]
+            result = re.sub(r'(\',\d*,\d*,)', r';\1', result)
+            #print result
+            #result = re.compile('sources *: *\[.+?\]').findall(result)[-1]
             url = js().worker(result)
             return url
         except:
